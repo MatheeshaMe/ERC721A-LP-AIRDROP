@@ -18,63 +18,8 @@ import { HardhatUserConfig, task } from "hardhat/config";
 import "solidity-coverage";
 import { RandomToken } from "./types";
 import { accounts, node_url } from "./utils/configs";
+import "@nomiclabs/hardhat-etherscan";
 
-
-
-
-// This is a sample Hardhat task. To learn how to create your own go to
-// https://hardhat.org/guides/create-task.html
-task("accounts", "Prints the list of accounts", async (args, hre) => {
-  const accounts = await hre.ethers.getSigners();
-
-  for (const account of accounts.slice(0, 7)) {
-    const balance = await account.getBalance();
-    console.log(
-      `${account.address} - ${hre.ethers.utils.formatEther(balance.toString())}`
-    );
-  }
-});
-
-task("send_eth", "Send ETH from account to account")
-  .addParam("accountindex", "The account index")
-  .addParam("amount", "The amount to send")
-  .addParam("accounttoindex", "The address to send to")
-  .setAction(async (args, hre) => {
-    const accounts = await hre.ethers.getSigners();
-    const chosenAccount = accounts[args.accountindex];
-    const toAccount = accounts[args.accounttoindex].address;
-
-    await chosenAccount.sendTransaction({
-      to: toAccount,
-      value: hre.ethers.utils.parseEther(args.amount),
-    });
-  });
-
-// example use: yarn hardhat mint --amount 1000000 --address 0x47fEd759cA8bA2A7881b17501F3028985680cB9D  --network ropsten
-task("mint", "Mint Random to account")
-  .addParam("amount", "The amount to send")
-  .addParam("address", "The amount to send")
-  .setAction(async (args, hre) => {
-    const accounts = await hre.ethers.getSigners();
-    const chosenAccount = accounts[4];
-
-    const RandomTokenDeployment = await hre.deployments.get("RandomToken");
-
-    const contract = (await hre.ethers.getContractAt(
-      "RandomToken",
-      RandomTokenDeployment.address,
-      chosenAccount
-    )) as RandomToken;
-
-    const mintTx = await contract.mint(
-      args.address,
-      hre.ethers.utils.parseEther(args.amount)
-    );
-
-    const transation = await mintTx.wait();
-
-    console.log("Minted transaction: ", transation.transactionHash);
-  });
 
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
@@ -83,11 +28,13 @@ task("mint", "Mint Random to account")
  * @type import('hardhat/config').HardhatUserConfig
  */
 
+const account = [process.env.GOERLI_SECRET!]
+
 const config: HardhatUserConfig = {
   networks: {
-    rinkeby: {
-      url: node_url("rinkeby"),
-      accounts: accounts("rinkeby"),
+    goerli: {
+      url:process.env.GOERLI_URL!,
+      accounts: account
     },
     ropsten: {
       url: node_url("ropsten"),
@@ -95,9 +42,9 @@ const config: HardhatUserConfig = {
       gasMultiplier: 1.2,
     },
     hardhat: {
-      gasPrice: process.env.NODE_ENV == "test" ? 21 : "auto",
+      gasPrice: process.env.NODE_ENV === "test" ? 21 : "auto",
       tags: ["Core", "Test"],
-      loggingEnabled: process.env.EXTENDED_LOGS == "true" ? true : false,
+      loggingEnabled: process.env.EXTENDED_LOGS === "true" ? true : false,
     },
   },
   tenderly: {
@@ -111,7 +58,7 @@ const config: HardhatUserConfig = {
     operator_node: 3,
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY || "",
+    apiKey: process.env.ETHERSCAN_API_KEY! || "",
   },
   solidity: {
     version: "0.8.10",
