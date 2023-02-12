@@ -15,8 +15,7 @@
     "postinstall": "patch-package && npm run build",
     "semantic-release": "semantic-release",
     "commit": "cz",
-    "mrf": "ts-node scripts/merkleProof.ts",
-    "kalaniw-oni-whoto": "ts-node scripts/klny.ts"
+    "mrf": "ts-node scripts/merkleProof.ts"
   },
   "private": true,
   "publishConfig": {

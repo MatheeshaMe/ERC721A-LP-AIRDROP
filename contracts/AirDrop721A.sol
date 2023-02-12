@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 
-contract NFTCONTRACT is ERC721A, Ownable{
+contract BeeBoyz is ERC721A, Ownable{
     using Strings for uint256;
 
     uint256 public constant MAX_SUPPLY = 10000;
@@ -17,8 +17,8 @@ contract NFTCONTRACT is ERC721A, Ownable{
     uint256 public constant PUBLIC_SALE_PRICE = .099 ether;
     uint256 public constant WHITELIST_SALE_PRICE = .0799 ether;
 
-    string private  baseTokenUri;
-    string public   placeholderTokenUri;
+    string public  baseTokenUri;
+    string public  placeholderTokenUri;
 
     //deploy smart contract, toggle WL, toggle WL when done, toggle publicSale
     bool public isRevealed;
